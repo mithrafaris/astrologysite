@@ -1,1 +1,46 @@
 @import "tailwindcss";
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Light mode overrides for dark sections */
+html:not(.dark) .bg-gray-950 {
+  background-color: #fafafa;
+}
+html:not(.dark) .bg-gray-900 {
+  background-color: #f3f4f6;
+}
+html:not(.dark) .text-white {
+  color: #1f2937;
+}
+html:not(.dark) .text-gray-200 {
+  color: #111827;
+}
+html:not(.dark) .text-gray-400 {
+  color: #4b5563;
+}
+html:not(.dark) .text-gray-500 {
+  color: #6b7280;
+}
+html:not(.dark) .border-yellow-500\/20 {
+  border-color: rgba(234,179,8,0.4);
+}
+html:not(.dark) .border-gray-800 {
+  border-color: #e5e7eb;
+}
+html:not(.dark) .border-gray-700 {
+  border-color: #d1d5db;
+}
+html:not(.dark) .bg-gray-800 {
+  background-color: #ffffff;
+}
+html:not(.dark) .text-gray-300 {
+  color: #374151;
+}
+html:not(.dark) .text-gray-600 {
+  color: #4b5563;
+}
+html:not(.dark) .text-yellow-300 {
+  color: #ca8a04;
+}
