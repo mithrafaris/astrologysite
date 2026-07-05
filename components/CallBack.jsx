@@ -11,16 +11,46 @@ export default function CallBack() {
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [fieldErrors, setFieldErrors] = useState({})
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
+  const validate = () => {
+    const errors = {}
+    const name = formData.name.trim()
+    const phone = formData.phone.trim()
+
+    if (!name) {
+      errors.name = 'Please enter your name.'
+    } else if (name.length < 2) {
+      errors.name = 'Name must be at least 2 characters.'
+    } else if (!/^[a-zA-Z\s.'-]+$/.test(name)) {
+      errors.name = 'Name can only contain letters and spaces.'
+    }
+
+    if (!phone) {
+      errors.phone = 'Please enter your phone number.'
+    } else if (!/^[6-9]\d{9}$/.test(phone.replace(/[\s-]/g, ''))) {
+      errors.phone = 'Enter a valid 10-digit phone number.'
+    }
+
+    return errors
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
+    const errors = validate()
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors)
+      setError(null)
+      return
+    }
+    setFieldErrors({})
     setLoading(true)
     setError(null)
-    const { error } = await supabase.from('callbacks').insert([{ name: formData.name, phone: formData.phone }])
+    const { error } = await supabase.from('callbacks').insert([{ name: formData.name.trim(), phone: formData.phone.trim() }])
     if (error) {
       setError('Something went wrong. Please try again.')
     } else {
@@ -34,6 +64,7 @@ export default function CallBack() {
     setIsOpen(false)
     setSubmitted(false)
     setError(null)
+    setFieldErrors({})
     setFormData({ name: '', phone: '' })
   }
 
@@ -71,11 +102,13 @@ export default function CallBack() {
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
-                    <input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Enter your name" className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-yellow-500" />
+                    <input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Enter your name" className={`w-full border rounded-lg px-4 py-2 text-sm focus:outline-none ${fieldErrors.name ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-yellow-500'}`} />
+                    {fieldErrors.name && <p className="text-red-500 text-xs mt-1">{fieldErrors.name}</p>}
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-                    <input type="tel" name="phone" value={formData.phone} onChange={handleChange} placeholder="Enter your phone number" className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-yellow-500" />
+                    <input type="tel" name="phone" value={formData.phone} onChange={handleChange} placeholder="10-digit phone number" className={`w-full border rounded-lg px-4 py-2 text-sm focus:outline-none ${fieldErrors.phone ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-yellow-500'}`} />
+                    {fieldErrors.phone && <p className="text-red-500 text-xs mt-1">{fieldErrors.phone}</p>}
                   </div>
                   {error && <p className="text-red-500 text-sm">{error}</p>}
                   <button onClick={handleSubmit} disabled={loading} className="w-full bg-yellow-700 text-white py-3 rounded-lg font-semibold hover:bg-yellow-800 transition disabled:opacity-50">

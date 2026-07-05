@@ -22,10 +22,7 @@ export default function AdminLayout({ children }) {
   const isLoginPage = pathname === '/admin/login'
 
   useEffect(() => {
-    if (isLoginPage) {
-      setChecked(true)
-      return
-    }
+    if (isLoginPage) return
 
     let active = true
 

@@ -15,9 +15,9 @@ export default function AdminPage() {
   }
  useEffect(() => {
     fetchData()
+    // eslint-disable-next-line react-hooks/set-state-in-effect
   }, [])
  
-
   async function deleteContact(id) {
     await supabase.from('contacts').delete().eq('id', id)
     setContacts(contacts.filter(c => c.id !== id))
