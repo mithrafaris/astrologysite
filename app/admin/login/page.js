@@ -5,12 +5,10 @@ import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 
 export default function AdminLogin() {
-  const [isSignUp, setIsSignUp] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
-  const [success, setSuccess] = useState(null)
   const router = useRouter()
 
   async function handleLogin(e) {
@@ -29,22 +27,6 @@ export default function AdminLogin() {
     setLoading(false)
   }
 
-  async function handleSignUp(e) {
-    e.preventDefault()
-    setLoading(true)
-    setError(null)
-
-    const { error } = await supabase.auth.signUp({ email, password })
-
-    if (error) {
-      setError(error.message)
-    } else {
-      setSuccess('Account created! You can now log in.')
-      setIsSignUp(false)
-    }
-    setLoading(false)
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-yellow-950 to-gray-900 flex items-center justify-center px-4">
 
@@ -59,16 +41,6 @@ export default function AdminLogin() {
           <div className="text-5xl mb-3">🔮</div>
           <h1 className="text-2xl font-bold text-white">Guruji Thulsi Acharya</h1>
           <p className="text-yellow-500 text-sm mt-1">Astrology Center — Admin Panel</p>
-        </div>
-
-        {/* Tabs */}
-        <div className="flex bg-gray-800 rounded-xl p-1 mb-6">
-          <button onClick={() => { setIsSignUp(false); setError(null) }} className={`flex-1 py-2 rounded-lg text-sm font-semibold transition ${!isSignUp ? 'bg-yellow-700 text-white' : 'text-gray-400 hover:text-white'}`}>
-            Login
-          </button>
-          <button onClick={() => { setIsSignUp(true); setError(null) }} className={`flex-1 py-2 rounded-lg text-sm font-semibold transition ${isSignUp ? 'bg-yellow-700 text-white' : 'text-gray-400 hover:text-white'}`}>
-            Sign Up
-          </button>
         </div>
 
         {/* Form */}
@@ -100,18 +72,12 @@ export default function AdminLogin() {
             </div>
           )}
 
-          {success && (
-            <div className="bg-green-500/10 border border-green-500/30 text-green-400 text-sm px-4 py-3 rounded-xl">
-              ✅ {success}
-            </div>
-          )}
-
           <button
-            onClick={isSignUp ? handleSignUp : handleLogin}
+            onClick={handleLogin}
             disabled={loading}
             className="w-full bg-gradient-to-r from-yellow-600 to-orange-600 text-white py-3 rounded-xl font-bold hover:shadow-lg hover:shadow-yellow-500/20 transition-all disabled:opacity-50"
           >
-            {loading ? '⏳ Please wait...' : isSignUp ? '🚀 Create Account' : '🔐 Login to Dashboard'}
+            {loading ? '⏳ Please wait...' : '🔐 Login to Dashboard'}
           </button>
         </div>
 
