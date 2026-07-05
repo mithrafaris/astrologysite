@@ -8,16 +8,46 @@ export default function Contact() {
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [fieldErrors, setFieldErrors] = useState({})
 
   const handleChange = (e) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
+  const validate = () => {
+    const errors = {}
+    const name = formData.name.trim()
+    const phone = formData.phone.trim()
+
+    if (!name) {
+      errors.name = 'Please enter your name.'
+    } else if (name.length < 2) {
+      errors.name = 'Name must be at least 2 characters.'
+    } else if (!/^[a-zA-Z\s.'-]+$/.test(name)) {
+      errors.name = 'Name can only contain letters and spaces.'
+    }
+
+    if (!phone) {
+      errors.phone = 'Please enter your phone number.'
+    } else if (!/^[6-9]\d{9}$/.test(phone.replace(/[\s-]/g, ''))) {
+      errors.phone = 'Enter a valid 10-digit phone number.'
+    }
+
+    if (formData.message.trim().length > 1000) {
+      errors.message = 'Message is too long (max 1000 characters).'
+    }
+
+    return errors
+  }
+
   const handleSubmit = async () => {
-    if (!formData.name.trim() || !formData.phone.trim()) {
-      setError('Please enter your name and phone number.')
+    const errors = validate()
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors)
+      setError(null)
       return
     }
+    setFieldErrors({})
     setLoading(true)
     setError(null)
     const { error: dbError } = await supabase
@@ -90,17 +120,20 @@ export default function Contact() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div>
                     <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">Your Name <span className="text-red-400">*</span></label>
-                    <input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Your Name" className="w-full bg-gray-800 border border-gray-700 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/10 transition placeholder-gray-600" />
+                    <input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Your Name" className={`w-full bg-gray-800 border rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 transition placeholder-gray-600 ${fieldErrors.name ? 'border-red-500 focus:border-red-500 focus:ring-red-500/10' : 'border-gray-700 focus:border-yellow-500 focus:ring-yellow-500/10'}`} />
+                    {fieldErrors.name && <p className="text-red-400 text-xs mt-1">{fieldErrors.name}</p>}
                   </div>
                   <div>
                     <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">Phone Number <span className="text-red-400">*</span></label>
-                    <input type="tel" name="phone" value={formData.phone} onChange={handleChange} placeholder="Phone Number" className="w-full bg-gray-800 border border-gray-700 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/10 transition placeholder-gray-600" />
+                    <input type="tel" name="phone" value={formData.phone} onChange={handleChange} placeholder="10-digit phone number" className={`w-full bg-gray-800 border rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 transition placeholder-gray-600 ${fieldErrors.phone ? 'border-red-500 focus:border-red-500 focus:ring-red-500/10' : 'border-gray-700 focus:border-yellow-500 focus:ring-yellow-500/10'}`} />
+                    {fieldErrors.phone && <p className="text-red-400 text-xs mt-1">{fieldErrors.phone}</p>}
                   </div>
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">Your Concern</label>
-                  <textarea name="message" value={formData.message} onChange={handleChange} placeholder="Describe what you'd like guidance on..." rows={5} className="w-full bg-gray-800 border border-gray-700 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/10 transition placeholder-gray-600 resize-none" />
+                  <textarea name="message" value={formData.message} onChange={handleChange} placeholder="Describe what you'd like guidance on..." rows={5} className={`w-full bg-gray-800 border rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 transition placeholder-gray-600 resize-none ${fieldErrors.message ? 'border-red-500 focus:border-red-500 focus:ring-red-500/10' : 'border-gray-700 focus:border-yellow-500 focus:ring-yellow-500/10'}`} />
+                  {fieldErrors.message && <p className="text-red-400 text-xs mt-1">{fieldErrors.message}</p>}
                 </div>
 
                 {error && <p className="text-red-400 text-sm">{error}</p>}
