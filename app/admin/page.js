@@ -7,16 +7,16 @@ export default function AdminPage() {
   const [contacts, setContacts] = useState([])
   const [callbacks, setCallbacks] = useState([])
 
-  async function fetchData() {
+ async function fetchData() {
     const { data: contactsData } = await supabase.from('contacts').select('*').order('created_at', { ascending: false })
     const { data: callbacksData } = await supabase.from('callbacks').select('*').order('created_at', { ascending: false })
     setContacts(contactsData || [])
     setCallbacks(callbacksData || [])
   }
-
-  useEffect(() => {
+ useEffect(() => {
     fetchData()
   }, [])
+ 
 
   async function deleteContact(id) {
     await supabase.from('contacts').delete().eq('id', id)
