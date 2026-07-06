@@ -19,10 +19,10 @@ export default function AdminLayout({ children }) {
     { label: '⭐ Reviews', href: '/admin/reviews' },
   ]
 
-  const isLoginPage = pathname === '/admin/login'
+  const isPublicAuthPage = pathname === '/admin/login' || pathname === '/admin/forgot-password' || pathname === '/admin/reset-password'
 
   useEffect(() => {
-    if (isLoginPage) return
+    if (isPublicAuthPage) return
 
     let active = true
 
@@ -45,14 +45,14 @@ export default function AdminLayout({ children }) {
       active = false
       listener.subscription.unsubscribe()
     }
-  }, [isLoginPage, router])
+  }, [isPublicAuthPage, router])
 
   async function handleLogout() {
     await supabase.auth.signOut()
     router.replace('/admin/login')
   }
 
-  if (isLoginPage) return <>{children}</>
+  if (isPublicAuthPage) return <>{children}</>
 
   if (!checked) {
     return (

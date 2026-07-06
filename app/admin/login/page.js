@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 export default function AdminLogin() {
   const [email, setEmail] = useState('')
@@ -64,6 +65,12 @@ export default function AdminLogin() {
               placeholder="Enter your password"
               className="w-full bg-gray-800 border border-gray-700 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-500 placeholder-gray-500"
             />
+          </div>
+
+          <div className="text-right">
+            <Link href="/admin/forgot-password" className="text-yellow-500 text-xs hover:underline">
+              Forgot password?
+            </Link>
           </div>
 
           {error && (
